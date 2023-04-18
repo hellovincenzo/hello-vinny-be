@@ -4,11 +4,14 @@ import { Request, Response } from 'express';
 
 import { mailoptions } from '../constants';
 
-const oAuth2Client = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI);
-
-oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
-
 async function sendMail(req: Request, res: Response) {
+  const oAuth2Client = new google.auth.OAuth2(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+    process.env.REDIRECT_URI,
+  );
+
+  oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
   try {
     const accessToken = await oAuth2Client.getAccessToken();
 

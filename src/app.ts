@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import emails from './routes/emails';
 
 // Load env vars
-dotenv.config();
+dotenv.config({ path: './config/config.env' });
 
 const app: Application = express();
 
