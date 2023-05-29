@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import 'colors';
 
 // Load env vars
-dotenv.config({ path: './config/config.env' });
+dotenv.config({ path: './config/.env' });
 
 // Load models
 import Project from '@models/Project';

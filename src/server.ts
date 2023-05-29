@@ -1,4 +1,5 @@
 import express, { Application } from 'express';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import 'colors';
@@ -10,16 +11,20 @@ import { connectDB } from '@services/mongoose';
 // Route files
 import emails from '@routes/emails';
 import projects from '@routes/projects';
+import auth from '@routes/auth';
 
 import { errorHandler } from '@middlewares/error';
 
 // Load env vars
-dotenv.config({ path: './config/config.env' });
+dotenv.config({ path: './config/.env' });
 
 const app: Application = express();
 
 // Body parser
 app.use(express.json());
+
+// Cookie parser
+app.use(cookieParser());
 
 // Dev logging middlware
 if (process.env.NODE_ENV === Env.Development) app.use(morgan('dev'));
@@ -30,6 +35,7 @@ connectDB();
 // Mount routers
 app.use('/api/v1/emails', emails);
 app.use('/api/v1/projects', projects);
+app.use('/api/v1/auth', auth);
 
 // Error handler
 app.use(errorHandler);
