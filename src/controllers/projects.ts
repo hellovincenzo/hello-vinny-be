@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import redis from 'redis';
 
 import Project from '@models/Project';
 import { ErrorResponse } from '@utils/errorResponse';

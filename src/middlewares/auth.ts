@@ -18,7 +18,7 @@ const protect = async (req: RequestWithUser, res: Response, next: NextFunction) 
     const user = await User.findById(decoded.id);
 
     if (!user) {
-      throw new Error();
+      return next(new ErrorResponse('Unauthorized', 401));
     }
 
     req.token = token;

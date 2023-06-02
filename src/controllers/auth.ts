@@ -105,7 +105,7 @@ const sendTokenResponse = (user: any, statusCode: number, res: Response) => {
   const token = user.getSignedJwtToken();
 
   const options: { expiresIn: Date; httpOnly: boolean; secure?: boolean } = {
-    expiresIn: new Date(Date.now() + Number(process.env.JWT_COOKIE_PARSER) * 24 * 60 * 60 * 1000),
+    expiresIn: new Date(Date.now() + Number(process.env.JWT_COOKIE_PARSER) * 24 * 60 * 60 * 1000), // 30 days
     httpOnly: true,
   };
 
