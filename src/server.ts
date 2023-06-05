@@ -11,6 +11,7 @@ import { connectDB } from '@services/mongoose';
 // Route files
 import emails from '@routes/emails';
 import projects from '@routes/projects';
+import features from '@routes/features';
 import auth from '@routes/auth';
 
 import { errorHandler } from '@middlewares/error';
@@ -35,6 +36,7 @@ connectDB();
 // Mount routers
 app.use('/api/v1/emails', emails);
 app.use('/api/v1/projects', projects);
+app.use('/api/v1/features', features);
 app.use('/api/v1/auth', auth);
 
 // Error handler
