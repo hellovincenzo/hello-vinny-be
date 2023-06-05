@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
 import slugify from 'slugify';
 
@@ -43,4 +43,4 @@ ProjectSchema.pre('save', function (next) {
   next();
 });
 
-export default mongoose.model('Project', ProjectSchema);
+export default model('Project', ProjectSchema);
