@@ -38,7 +38,7 @@ const ProjectSchema = new Schema({
 
 // Create project slug from the name
 ProjectSchema.pre('save', function (next) {
-  this.slug = slugify(this.name, { lower: true });
+  this.slug = this.name && slugify(this.name, { lower: true });
 
   next();
 });
