@@ -1,7 +1,9 @@
+import path from 'path';
 import express, { Application } from 'express';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
+import fileupload from 'express-fileupload';
 import 'colors';
 import 'module-alias/register';
 
@@ -21,17 +23,23 @@ dotenv.config({ path: './config/.env' });
 
 const app: Application = express();
 
+// Connect to database
+connectDB();
+
 // Body parser
 app.use(express.json());
 
 // Cookie parser
 app.use(cookieParser());
 
+// File Upload
+app.use(fileupload());
+
+// Set static folder
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Dev logging middlware
 if (process.env.NODE_ENV === Env.Development) app.use(morgan('dev'));
-
-// Connect to database
-connectDB();
 
 // Mount routers
 app.use('/api/v1/emails', emails);
@@ -48,7 +56,7 @@ const server = app.listen(PORT, (): void => {
   console.log(`SERVER IS UP ON PORT: ${PORT} IN ${process.env.NODE_ENV} MODE.`.yellow.bold);
 });
 
-// Handleu unhandled promise rejection
+// Handle unhandled promise rejection
 process.on('unhandledRejection', (err: Error) => {
   console.log(`Error: ${err.message}`.red);
 

@@ -1,8 +1,11 @@
+import path from 'path';
 import { Request, Response, NextFunction } from 'express';
 import redis from 'redis';
 
 import Project from '@models/Project';
 import { ErrorResponse } from '@utils/errorResponse';
+
+import { UploadedFile } from 'express-fileupload';
 
 // @desc        Get all projects
 // @route       GET /api/v1/projects
@@ -76,4 +79,47 @@ const deleteProject = async (req: Request, res: Response, next: NextFunction) =>
   }
 };
 
-export { getProjects, getProject, createProject, updateProject, deleteProject };
+// @desc        Upload photo for bootcamp
+// @route       PUT /api/v1/projects:id/photo
+// @access      Private
+const projectPhotoUpload = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const project = await Project.findById(req.params.id);
+
+    if (!project) return next(new ErrorResponse(`Project not found with ID: ${req.params.id}`, 404));
+
+    const file = req.files?.file as UploadedFile;
+
+    if (!file) new ErrorResponse('Please upload a file', 400);
+
+    // Check file being an image
+    if (file.mimetype.startsWith('image')) {
+      new ErrorResponse('Please upload a file', 400);
+    }
+
+    // Check file size
+    if (file.size > Number(process.env.MAX_SIZE_UPLOAD)) {
+      new ErrorResponse(`Please upload an image less than ${process.env.MAX_SIZE_UPLOAD}`, 400);
+    }
+
+    // Create custom file name
+    file.name = path.parse(file.name).name + '_' + Date.now() + path.parse(file.name).ext;
+
+    file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
+      if (err) {
+        return next(new ErrorResponse(`Problem with file upload`, 500));
+      }
+
+      await Project.findByIdAndUpdate(req.params.id, { photo: path.parse(file.name).name });
+    });
+
+    res.status(200).json({
+      success: true,
+      data: file.name,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { getProjects, getProject, createProject, updateProject, deleteProject, projectPhotoUpload };
