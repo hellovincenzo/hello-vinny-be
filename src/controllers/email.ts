@@ -4,6 +4,8 @@ import { Request, Response } from 'express';
 
 import { mailoptions } from '../constants';
 
+import Email from '@models/Email';
+
 async function sendMail(req: Request, res: Response) {
   const oAuth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,
@@ -39,5 +41,18 @@ async function sendMail(req: Request, res: Response) {
     res.send(error);
   }
 }
+
+const createEmail = async (req: Request, res: Response) => {
+  const email = new Email();
+
+  const { subject, who, description } = req.body;
+
+  res.status(201).json({
+    success: true,
+    subject,
+    who,
+    description,
+  });
+};
 
 export { sendMail };
