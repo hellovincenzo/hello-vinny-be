@@ -43,16 +43,18 @@ async function sendMail(req: Request, res: Response) {
 }
 
 const createEmail = async (req: Request, res: Response) => {
-  const email = new Email();
-
   const { subject, who, description } = req.body;
 
-  res.status(201).json({
-    success: true,
+  const email = await Email.create({
     subject,
     who,
     description,
   });
+
+  res.status(201).json({
+    success: true,
+    email,
+  });
 };
 
-export { sendMail };
+export { sendMail, createEmail };
