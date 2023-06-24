@@ -1,10 +1,11 @@
 import nodemailer, { TransportOptions } from 'nodemailer';
 import { google } from 'googleapis';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import { mailoptions } from '../constants';
 
 import Email from '@models/Email';
+import { ErrorResponse } from '@utils/errorResponse';
 
 async function sendMail(req: Request, res: Response) {
   const oAuth2Client = new google.auth.OAuth2(
@@ -42,19 +43,23 @@ async function sendMail(req: Request, res: Response) {
   }
 }
 
-const createEmail = async (req: Request, res: Response) => {
+const createEmail = async (req: Request, res: Response, next: NextFunction) => {
   const { subject, who, description } = req.body;
 
-  const email = await Email.create({
-    subject,
-    who,
-    description,
-  });
-
-  res.status(201).json({
-    success: true,
-    email,
-  });
+  try {
+    const email = await Email.create({
+      ip: req.ip,
+      subject,
+      who,
+      description,
+    });
+    res.status(201).json({
+      success: true,
+      email,
+    });
+  } catch (error) {
+    next({ error });
+  }
 };
 
 export { sendMail, createEmail };
