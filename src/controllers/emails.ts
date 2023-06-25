@@ -58,7 +58,7 @@ const createEmail = async (req: Request, res: Response, next: NextFunction) => {
       email,
     });
   } catch (error) {
-    next({ error });
+    next(error);
   }
 };
 

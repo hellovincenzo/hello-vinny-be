@@ -8,20 +8,17 @@ const EmailSchema = new Schema(
     subject: {
       type: String,
       required: [true, 'Please add a subject'],
+      trim: true,
     },
     who: {
       type: [String],
-      validate(value: string) {
-        if (value === 'test') {
-          throw new Error('Age must be a positive number');
-        }
-      },
       required: [true, 'Please select your status'],
       enum: ['Hiring', 'Other'],
     },
     description: {
       type: String,
-      require: [true, 'Please add a description'],
+      require: true,
+      trim: true,
     },
   },
   {

@@ -22,10 +22,13 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     error = new ErrorResponse(message, 400);
   }
 
-  // Mongoose Validation Error
+  console.log(err);
+
+  // // Mongoose Validation Error
   if (err.name === 'ValidationError') {
     const message = err.errors;
-    error = new ErrorResponse(message, 400);
+
+    error = new ErrorResponse(err, 400);
   }
 
   res.status(error.statusCode || 500).json({
