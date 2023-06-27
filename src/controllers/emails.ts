@@ -5,9 +5,8 @@ import { NextFunction, Request, Response } from 'express';
 import { mailoptions } from '../constants';
 
 import Email from '@models/Email';
-import { ErrorResponse } from '@utils/errorResponse';
 
-async function sendMail(req: Request, res: Response) {
+const sendMail = async (req: Request, res: Response) => {
   const oAuth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,
     process.env.CLIENT_SECRET,
@@ -41,7 +40,7 @@ async function sendMail(req: Request, res: Response) {
     console.log(error);
     res.send(error);
   }
-}
+};
 
 const createEmail = async (req: Request, res: Response, next: NextFunction) => {
   const { subject, who, description } = req.body;
@@ -53,6 +52,7 @@ const createEmail = async (req: Request, res: Response, next: NextFunction) => {
       who,
       description,
     });
+
     res.status(201).json({
       success: true,
       email,

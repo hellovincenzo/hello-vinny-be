@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 
-import { createEmail } from '@controllers/emails';
+import { createEmail, sendMail } from '@controllers/emails';
 
 import { protect } from '@middlewares/auth';
 
