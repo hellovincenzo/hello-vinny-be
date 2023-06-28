@@ -7,5 +7,6 @@ import { protect } from '@middlewares/auth';
 const router: Router = express.Router();
 
 router.route('/').post(createEmail);
+router.route('/send-email').post(sendMail);
 
 export default router;
