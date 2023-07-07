@@ -14,6 +14,7 @@ const sendMail = async (req: Request, res: Response) => {
   );
 
   oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
+
   try {
     const accessToken = await oAuth2Client.getAccessToken();
 
@@ -31,7 +32,7 @@ const sendMail = async (req: Request, res: Response) => {
 
     const mailOptions = {
       ...mailoptions,
-      text: 'The Gmail API with NodeJS works',
+      text: req.body.text,
     };
 
     const result = await transporter.sendMail(mailOptions);
