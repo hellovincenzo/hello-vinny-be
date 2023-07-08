@@ -7,32 +7,37 @@ import { mailoptions } from '../constants';
 import Email from '@models/Email';
 
 const sendMail = async (req: Request, res: Response) => {
-  const oAuth2Client = new google.auth.OAuth2(
-    process.env.CLIENT_ID,
-    process.env.CLIENT_SECRET,
-    process.env.REDIRECT_URI,
-  );
-
-  oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
+  // const oAuth2Client = new google.auth.OAuth2(
+  //   process.env.CLIENT_ID,
+  //   process.env.CLIENT_SECRET,
+  //   process.env.REDIRECT_URI,
+  // );
+  // oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
 
   try {
-    const accessToken = await oAuth2Client.getAccessToken();
+    // const accessToken = await oAuth2Client.getAccessToken();
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        type: 'OAuth2',
         user: 'vincenzo33.pellegrini@gmail.com',
-        clientId: process.env.CLIENT_ID,
-        clientSecret: process.env.CLIENT_SECRET,
-        refreshToken: process.env.REFRESH_TOKEN,
-        accessToken,
+        pass: 'jejvktrnhkjlwkao',
       },
+      // auth: {
+      //   type: 'OAuth2',
+      //   user: 'vincenzo33.pellegrini@gmail.com',
+      //   clientId: process.env.CLIENT_ID,
+      //   clientSecret: process.env.CLIENT_SECRET,
+      //   refreshToken: process.env.REFRESH_TOKEN,
+      //   accessToken,
+      // },
     } as TransportOptions);
 
     const mailOptions = {
-      ...mailoptions,
-      text: req.body.text,
+      from: '😎 <vincenzo33.pellegrini@gmail.com>',
+      to: 'vincenzo33.pellegrini@gmail.com',
+      subject: 'Nodemailer Test',
+      text: 'Test sending Gmail using Node JS',
     };
 
     const result = await transporter.sendMail(mailOptions);
