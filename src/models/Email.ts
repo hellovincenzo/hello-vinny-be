@@ -5,9 +5,14 @@ const EmailSchema = new Schema(
     ip: {
       type: String,
     },
-    subject: {
+    name: {
       type: String,
-      required: [true, 'Please add a subject'],
+      required: [true, 'Please add your full name'],
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: [true, 'Please add your email address'],
       trim: true,
     },
     who: {
