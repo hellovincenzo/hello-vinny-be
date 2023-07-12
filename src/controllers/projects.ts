@@ -1,6 +1,7 @@
 import path from 'path';
-import { Request, Response, NextFunction } from 'express';
+import fs from 'fs';
 import redis from 'redis';
+import { Request, Response, NextFunction } from 'express';
 
 import Project from '@models/Project';
 import { ErrorResponse } from '@utils/errorResponse';
@@ -41,7 +42,48 @@ const getProject = async (req: Request, res: Response, next: NextFunction) => {
 // @access      Private
 const createProject = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const project = await Project.create(req.body);
+    let project: any;
+    const file = req.files?.file as UploadedFile;
+
+    if (!file) {
+      project = await Project.create(req.body);
+    } else {
+      // Check file being an image
+      if (file.mimetype.startsWith('image')) {
+        new ErrorResponse('Please upload a file', 400);
+      }
+
+      // Check file size
+      if (file.size > Number(process.env.MAX_SIZE_UPLOAD)) {
+        new ErrorResponse(`Please upload an image less than ${process.env.MAX_SIZE_UPLOAD}`, 400);
+      }
+
+      // Create custom file name
+      file.name = path.parse(file.name).name + '_' + Date.now() + path.parse(file.name).ext;
+
+      project = await Project.create({ ...req.body, photo: file.name });
+
+      // Check if folder exist
+      fs.access(`${process.env.FILE_UPLOAD_PROJECTS_PATH}/${project._id}`, fs.constants.F_OK, (err) => {
+        // Project ID Folder does not exist
+        if (err) {
+          // Create New Project Folder with ID 'project._id'
+          fs.mkdir(`${process.env.FILE_UPLOAD_PROJECTS_PATH}/${project._id}`, { recursive: true }, (err) => {
+            if (err) {
+              new ErrorResponse('Problem while creating folder with ID:' + project._id, 400);
+            }
+          });
+        }
+
+        // Move the photo in folder
+        file.mv(`${process.env.FILE_UPLOAD_PROJECTS_PATH}/${project._id}/${file.name}`, async (err) => {
+          if (err) {
+            return next(new ErrorResponse(`Problem with file upload`, 500));
+          }
+        });
+      });
+    }
+
     res.status(201).json({ success: true, data: project });
   } catch (error) {
     next(error);
@@ -105,12 +147,18 @@ const projectPhotoUpload = async (req: Request, res: Response, next: NextFunctio
     // Create custom file name
     file.name = path.parse(file.name).name + '_' + Date.now() + path.parse(file.name).ext;
 
-    file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
+    file.mv(`${process.env.FILE_UPLOAD_PROJECTS_PATH}/${project._id}/${file.name}`, async (err) => {
       if (err) {
         return next(new ErrorResponse(`Problem with file upload`, 500));
       }
 
-      await Project.findByIdAndUpdate(req.params.id, { photo: path.parse(file.name).name });
+      await Project.findByIdAndUpdate(req.params.id, {
+        photo:
+          req.protocol +
+          '://' +
+          req.get('host') +
+          `${process.env.FILE_UPLOAD_PROJECTS_PATH?.replace('./public', '')}/${file.name}`,
+      });
     });
 
     res.status(200).json({

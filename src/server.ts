@@ -32,14 +32,14 @@ app.use(express.json());
 // Cookie parser
 app.use(cookieParser());
 
+// Dev logging middlware
+if (process.env.NODE_ENV === Env.Development) app.use(morgan('dev'));
+
 // File Upload
 app.use(fileupload());
 
 // Set static folder
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Dev logging middlware
-if (process.env.NODE_ENV === Env.Development) app.use(morgan('dev'));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Mount routers
 app.use('/api/v1/emails', emails);
@@ -50,7 +50,7 @@ app.use('/api/v1/auth', auth);
 // Error handler
 app.use(errorHandler);
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8080;
 
 const server = app.listen(PORT, (): void => {
   console.log(`SERVER IS UP ON PORT: ${PORT} IN ${process.env.NODE_ENV} MODE.`.yellow.bold);
